@@ -18,11 +18,16 @@ import "C"
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
+
 	"github.com/MontFerret/ferret"
 	"github.com/MontFerret/ferret/pkg/drivers"
 	"github.com/MontFerret/ferret/pkg/drivers/cdp"
 	"github.com/MontFerret/ferret/pkg/drivers/http"
 	"github.com/MontFerret/ferret/pkg/runtime"
+	awsConfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type Options struct {
@@ -31,6 +36,8 @@ type Options struct {
 	UserAgent string
 	Params    map[string]interface{}
 }
+
+type key string
 
 //export Execute
 func Execute(queryC *C.char, optsC C.struct_COptions) C.struct_CResult {
@@ -90,12 +97,69 @@ func Execute(queryC *C.char, optsC C.struct_COptions) C.struct_CResult {
 			err: C.CString(err.Error()),
 		}
 	}
+	if opts.Cdp != "" {
+		err = f.Drivers().Register(cdp.NewDriver(
+			cdp.WithProxy(opts.Proxy),
+			cdp.WithUserAgent(opts.UserAgent),
+			cdp.WithAddress(opts.Cdp),
+		))
 
-	err = f.Drivers().Register(cdp.NewDriver(
-		cdp.WithProxy(opts.Proxy),
-		cdp.WithUserAgent(opts.UserAgent),
-		cdp.WithAddress(opts.Cdp),
-	))
+		if err != nil {
+			return C.struct_CResult{
+				err: C.CString(err.Error()),
+			}
+		}
+
+	}
+
+	err = f.Functions().Namespace("TRAFILATURA").RegisterFunction("EXTRACT", TrafilaturaExtract)
+
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+
+	err = f.Functions().Namespace("SITEMAP").RegisterFunction("EXTRACT", ExtractSitemapUrls)
+
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+
+	err = f.Functions().Namespace("URLS").RegisterFunction("EXTRACT", ExtractUrls)
+
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+
+	cfg, err := awsConfig.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+	client := s3.NewFromConfig(cfg)
+
+	uploader := manager.NewUploader(client, func(u *manager.Uploader) {
+		u.PartSize = 10 * 1024 * 1024
+		u.Concurrency = 5
+	})
+
+	parquetWriter := NewParquetWriter(uploader)
+
+	err = f.Functions().Namespace("PARQUET").RegisterFunction("WRITE_TRAFILATURA", parquetWriter.WriteParquetTrafilatura)
+
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+
+	err = f.Functions().Namespace("PARALLEL").RegisterFunction("FETCH_TRAFILATURA", FetchTrafilatura)
 
 	if err != nil {
 		return C.struct_CResult{
@@ -122,4 +186,6 @@ func Execute(queryC *C.char, optsC C.struct_COptions) C.struct_CResult {
 
 func main() {
 
+	example, _ := ioutil.ReadFile("/home/arti/workdir/python-ferret/example/example.fql")
+	Execute(C.CString(string(example)), C.struct_COptions{})
 }

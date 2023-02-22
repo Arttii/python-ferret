@@ -1,13 +1,28 @@
-LET doc = DOCUMENT("https://github.com/topics", { driver: "cdp" })
+// LET doc = DOCUMENT("https://cockroachlabs.com/sitemap.xml", { driver: "http" })
 
-FOR el IN ELEMENTS(doc, ".py-4.border-bottom")
-    LIMIT @take
-    LET url = ELEMENT(el, "a")?
-    LET name = ELEMENT(el, ".f3")?
-    LET description = ELEMENT(el, ".f5")?
 
-    RETURN {
-        name: TRIM(name?.innerText),
-        description: TRIM(description?.innerText),
-        url: "https://github.com" + url?.attributes?.href
-    }
+LET topics=["https://www.prophecy.io/sitemap.xml"]
+
+
+LET urls= (
+    FOR topic IN topics
+        LET doc = DOCUMENT(topic, { driver: "http" })
+        return SITEMAP::EXTRACT(doc,"*/blog/*",'')
+
+)
+LET docs=PARALLEL::FETCH_TRAFILATURA(FLATTEN(urls),{ driver: "http" })
+PARQUET::WRITE_TRAFILATURA("yolo","thing",docs)
+
+return LENGTH(docs)
+// return urls
+
+ 
+
+// LET content= TRAFILATURA::EXTRACT(doc,{
+//     "includeLinks": false
+// })
+
+// PARQUET::WRITE_TRAFILATURA("yolo","thing",[content])
+
+// return "done"
+ 

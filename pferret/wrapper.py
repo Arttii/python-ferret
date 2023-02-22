@@ -45,7 +45,7 @@ class Error(Exception):
 
 class Ferret:
     def __init__(self, **kwargs):
-        self.cdp: str = kwargs.get('cdp', 'http://localhost:9222')
+        self.cdp: str = kwargs.get('cdp', '')
         self.proxy: str = kwargs.get('proxy', '')
         self.user_agent: str = kwargs.get('user_agent', '')
         self.params: dict = kwargs.get('params', {})
