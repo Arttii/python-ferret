@@ -14,13 +14,13 @@ jobs:
       run: |
         docker build . --file Dockerfile --tag dummy
         id=$(docker create dummy)
-        docker cp $id:/opt/pyfer/pyferret-0.1.0-py3-none-any.whl python_ferret-0.1.0-py3-none-any.whl
+        docker cp $id:/opt/pyfer/dist/python_ferret-0.2.0-py3-none-any.whl python_ferret-0.2.0-py3-none-any.whl
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         automatic_release_tag: "latest"
-        prerelease: true
+        prerelease: false
         title: "Development Build"
         files: |
-          python_ferret-0.1.0-py3-none-any.whl
+          python_ferret-0.2.0-py3-none-any.whl
  
