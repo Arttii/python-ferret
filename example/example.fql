@@ -1,6 +1,3 @@
-// LET doc = DOCUMENT("https://cockroachlabs.com/sitemap.xml", { driver: "http" })
-
-
 LET topics=["https://www.prophecy.io/sitemap.xml"]
 
 
