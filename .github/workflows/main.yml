@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: |
-        docker build . --file Dockerfile --tag dummy:$(date +%s)
-        id=$(docker create image-name)
+        docker build . --file Dockerfile --tag dummy
+        id=$(docker create dummy)
         docker cp $id:/opt/pyfer pyferret-0.1.0-py3-none-any.whl /tmp/python_ferret-0.1.0-py3-none-any.whl
  
