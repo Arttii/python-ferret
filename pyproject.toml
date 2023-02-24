@@ -6,17 +6,29 @@ dev = [
 ]
 
 [project]
-name = "python-ferret"
+name = "python_ferret"
 version = "0.2.1"
-description = ""
+description = "Python wrapper over Ferret written in C with some additional functions"
 authors = [
     {name = "arttii", email = "a.topchyan@krz.am"},
+    {name = "Artyom Topchyan",email = "a.topchyan@krz.am"},
 ]
 dependencies = []
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "MIT"}
-dynamic = ["classifiers"]
+ 
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+]
 [build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+
+[tool.setuptools.package-data]
+pferret = ['pferret/lib/go.sum','pferret/lib/go.mod','pferret/lib/*.go','pferret/lib/libferret.h','pferret/lib/libferret.so']
