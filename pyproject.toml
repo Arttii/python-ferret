@@ -10,7 +10,6 @@ name = "python_ferret"
 version = "0.2.1"
 description = "Python wrapper over Ferret written in C with some additional functions"
 authors = [
-    {name = "arttii", email = "a.topchyan@krz.am"},
     {name = "Artyom Topchyan",email = "a.topchyan@krz.am"},
 ]
 dependencies = []
