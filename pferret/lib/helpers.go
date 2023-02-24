@@ -10,7 +10,7 @@ import (
 	"github.com/MontFerret/ferret/pkg/runtime/values/types"
 )
 
-func datePrefix(ctx context.Context, args ...core.Value) (core.Value, error) {
+func DatePrefix(ctx context.Context, args ...core.Value) (core.Value, error) {
 	// it's just a helper function which helps to validate a number of passed args
 	err := core.ValidateArgs(args, 1, 1)
 

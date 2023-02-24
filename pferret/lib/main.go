@@ -167,6 +167,22 @@ func Execute(queryC *C.char, optsC C.struct_COptions) C.struct_CResult {
 		}
 	}
 
+	err = f.Functions().Namespace("SPECIFIC").RegisterFunction("ASHBYHQ_REQUEST", Ashbyhq_Request)
+
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+
+	err = f.Functions().RegisterFunction("TO_BINARY", ToBinary)
+
+	if err != nil {
+		return C.struct_CResult{
+			err: C.CString(err.Error()),
+		}
+	}
+
 	out, err := f.Exec(
 		context.Background(),
 		query,
