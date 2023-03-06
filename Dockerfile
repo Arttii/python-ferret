@@ -28,5 +28,5 @@ WORKDIR /opt/pyfer
 
 COPY . /opt/pyfer
 COPY --from=builder /go/src/github.com/arttii/pyfer/pferret/lib/libferret.so /opt/pyfer/pferret/lib/libferret.so
-
+RUN ls /opt/pyfer/pferret/lib/ 
 RUN python setup.py bdist_wheel
