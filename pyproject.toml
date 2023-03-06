@@ -25,9 +25,13 @@ classifiers = [
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
+[tool.setuptools]
+include-package-data = true
+
+
 [tool.setuptools.packages.find]
 where = ["."]
 
 
 [tool.setuptools.package-data]
-pferret = ['pferret/lib/go.sum','pferret/lib/go.mod','pferret/lib/*.go','pferret/lib/libferret.h','pferret/lib/libferret.so']
+pferret = ['lib/go.sum','lib/go.mod','lib/*.go','lib/libferret.h','lib/libferret.so']

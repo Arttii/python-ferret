@@ -21,7 +21,7 @@ COPY  pferret/lib/go.mod pferret/lib/go.sum Makefile pferret/lib/*.go ./
 RUN go build -buildmode c-shared -o libferret.so
 
 
-FROM python:3.10.10-slim-bullseye as python
+FROM python:3.11.2-slim-bullseye as python
 
 
 WORKDIR /opt/pyfer
