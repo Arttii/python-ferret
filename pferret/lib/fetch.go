@@ -79,7 +79,7 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 			// Acquire semaphore to limit concurrent download
 			err := semaphore.Acquire(ctx, 1)
 			if err != nil {
-				return nil
+				return err
 			}
 
 			docValue := core.Value(nil)
@@ -94,27 +94,20 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 			semaphore.Release(1)
 			if err != nil {
 
-				return nil
+				return err
 			}
 
 			doc, err := drivers.ToDocument(docValue)
 
 			if err != nil {
-				if true {
-					return err
-				}
+				return err
 
-				return nil
 			}
 
 			parsed, err := TrafilaturaExtract(ctx, doc)
 
 			if err != nil {
-				if true {
-					return err
-				}
-
-				return nil
+				return err
 			}
 
 			_ = doc

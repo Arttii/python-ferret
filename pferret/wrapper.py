@@ -38,9 +38,10 @@ class _Result(ctypes.Structure):
 
 
 class Error(Exception):
-    def __init__(self, query, message):
+    def __init__(self, query, message,opts):
         self.query = query
         self.message = message
+        self.opts = opts
 
 
 class Ferret:
@@ -65,7 +66,7 @@ class Ferret:
         result = self.__ferret.Execute(query.encode("utf8"), opts)
 
         if result.has_error():
-            raise Error(query, result.get_error())
+            raise Error(query, result.get_error(),opts)
 
         return result.get_data()
 
