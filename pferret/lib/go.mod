@@ -12,6 +12,7 @@ require (
 	github.com/go-python/gopy v0.4.5
 	github.com/segmentio/ksuid v1.0.4
 	github.com/segmentio/parquet-go v0.0.0-20230216234451-674602166e6d
+	golang.org/x/sync v0.1.0
 )
 
 require (
@@ -59,7 +60,6 @@ require (
 	github.com/sethgrid/pester v1.1.0 // indirect
 	github.com/wI2L/jettison v0.7.4 // indirect
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4 // indirect
-	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 )

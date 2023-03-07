@@ -35,9 +35,9 @@ func TrafilaturaExtract(ctx context.Context, args ...core.Value) (core.Value, er
 			MaxDuplicateCount:     2,
 
 			MinExtractedSize:        200,
-			MinExtractedCommentSize: 0,
-			MinOutputSize:           0,
-			MinOutputCommentSize:    0,
+			MinExtractedCommentSize: 10,
+			MinOutputSize:           10,
+			MinOutputCommentSize:    10,
 		},
 	}
 
@@ -99,16 +99,25 @@ func TrafilaturaExtract(ctx context.Context, args ...core.Value) (core.Value, er
 		obj.Set("commentsText", values.NewString(dom.OuterHTML(r.CommentsNode)))
 	}
 
-	obj.Set("metadata", values.NewObjectWith(
-		values.NewObjectProperty("title", values.NewString(r.Metadata.Title)),
-		values.NewObjectProperty("author", values.NewString(r.Metadata.Author)),
-		values.NewObjectProperty("url", values.NewString(r.Metadata.URL)),
-		values.NewObjectProperty("hostname", values.NewString(r.Metadata.Hostname)),
-		values.NewObjectProperty("description", values.NewString(r.Metadata.Description)),
-		values.NewObjectProperty("sitename", values.NewString(r.Metadata.Sitename)),
-		values.NewObjectProperty("date", values.NewString(strconv.FormatInt(r.Metadata.Date.UTC().UnixMilli(), 10))),
+	obj.Set("title", values.NewString(r.Metadata.Title))
+	obj.Set("author", values.NewString(r.Metadata.Author))
+	obj.Set("url", values.NewString(r.Metadata.URL))
+	obj.Set("hostname", values.NewString(r.Metadata.Hostname))
+	obj.Set("description", values.NewString(r.Metadata.Description))
+	obj.Set("sitename", values.NewString(r.Metadata.Sitename))
+	obj.Set("date", values.NewString(strconv.FormatInt(r.Metadata.Date.UTC().UnixMilli(), 10)))
+	obj.Set("license", values.NewString(r.Metadata.License))
 
-		values.NewObjectProperty("license", values.NewString(r.Metadata.License))))
+	// obj.Set("metadata", values.NewObjectWith(
+	// 	values.NewObjectProperty("title", values.NewString(r.Metadata.Title)),
+	// 	values.NewObjectProperty("author", values.NewString(r.Metadata.Author)),
+	// 	values.NewObjectProperty("url", values.NewString(r.Metadata.URL)),
+	// 	values.NewObjectProperty("hostname", values.NewString(r.Metadata.Hostname)),
+	// 	values.NewObjectProperty("description", values.NewString(r.Metadata.Description)),
+	// 	values.NewObjectProperty("sitename", values.NewString(r.Metadata.Sitename)),
+	// 	values.NewObjectProperty("date", values.NewString(strconv.FormatInt(r.Metadata.Date.UTC().UnixMilli(), 10))),
+
+	// 	values.NewObjectProperty("license", values.NewString(r.Metadata.License))))
 	return obj, nil
 
 }

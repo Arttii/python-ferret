@@ -82,10 +82,10 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 			obj := value.(*values.Object)
 
 			row := TrafilaturaItem{
-				ContentHTML:  obj.MustGet("content_html").String(),
-				ContentText:  obj.MustGet("content_text").String(),
-				CommentsHTML: obj.MustGet("comments_html").String(),
-				CommentsText: obj.MustGet("comments_text").String(),
+				ContentHTML:  obj.MustGet("contentHTML").String(),
+				ContentText:  obj.MustGet("contentText").String(),
+				CommentsHTML: obj.MustGet("commentsHTML").String(),
+				CommentsText: obj.MustGet("commentsText").String(),
 
 				Title:  obj.MustGet("title").String(),
 				Author: obj.MustGet("author").String(),
