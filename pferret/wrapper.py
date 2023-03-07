@@ -56,17 +56,19 @@ class Ferret:
         self.__ferret.Execute.restype = _Result
 
     def execute(self, query: str, **kwargs) -> str:
+        
+        params=json.dumps(kwargs.get("params", self.params)).encode("utf8")
         opts = _Options(
             cdp=kwargs.get('cdp', self.cdp).encode("utf8"),
             proxy=kwargs.get('proxy', self.proxy).encode("utf8"),
             user_agent=kwargs.get('user_agent', self.user_agent).encode("utf8"),
-            params=json.dumps(kwargs.get("params", self.params)).encode("utf8")
+            params=params
         )
 
         result = self.__ferret.Execute(query.encode("utf8"), opts)
 
         if result.has_error():
-            raise Error(query, result.get_error(),opts)
+            raise Error(query, result.get_error(),params)
 
         return result.get_data()
 
