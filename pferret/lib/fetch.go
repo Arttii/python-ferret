@@ -94,20 +94,20 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 			semaphore.Release(1)
 			if err != nil {
 
-				return err
+				return nil
 			}
 
 			doc, err := drivers.ToDocument(docValue)
 
 			if err != nil {
-				return err
+				return nil
 
 			}
 
 			parsed, err := TrafilaturaExtract(ctx, doc)
 
 			if err != nil {
-				return err
+				return nil
 			}
 
 			_ = doc
