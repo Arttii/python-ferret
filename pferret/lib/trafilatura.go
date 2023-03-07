@@ -29,7 +29,16 @@ func TrafilaturaExtract(ctx context.Context, args ...core.Value) (core.Value, er
 		IncludeImages:   false,
 		IncludeLinks:    true,
 		ExcludeComments: true,
-		Config:          trafilatura.DefaultConfig(),
+		Config: &trafilatura.Config{
+			CacheSize:             4096,
+			MinDuplicateCheckSize: 100,
+			MaxDuplicateCount:     2,
+
+			MinExtractedSize:        200,
+			MinExtractedCommentSize: 0,
+			MinOutputSize:           0,
+			MinOutputCommentSize:    0,
+		},
 	}
 
 	el, err := drivers.ToElement(args[0])
