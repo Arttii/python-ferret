@@ -55,7 +55,9 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 
 	urls := args[0].(*values.Array)
 
-	g, _ := errgroup.WithContext(context.Background())
+	// g, _ := errgroup.WithContext(context.Background())
+
+	g := new(errgroup.Group)
 
 	docs := make(chan core.Value)
 	results := values.EmptyArray()
@@ -91,9 +93,6 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 
 			semaphore.Release(1)
 			if err != nil {
-				if true {
-					return err
-				}
 
 				return nil
 			}
