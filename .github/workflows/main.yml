@@ -14,7 +14,8 @@ jobs:
       run: |
         docker build . --file Dockerfile --tag dummy
         id=$(docker create dummy)
-        docker cp $id:/opt/pyfer/dist/*.whl .
+        VERSION=$(grep -m 1 version pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+        docker cp $id:/opt/pyfer/dist/python_ferret-${VERSION}-py3-none-any.whl python_ferret-${VERSION}-py3-none-any.whl
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
