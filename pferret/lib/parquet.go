@@ -87,9 +87,9 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 				CommentsHTML: obj.MustGet("commentsHTML").String(),
 				CommentsText: obj.MustGet("commentsText").String(),
 
-				Title:  obj.MustGet("title").String(),
-				Author: obj.MustGet("author").String(),
-				Date:   obj.MustGet("date").String(),
+				Title:    obj.MustGet("title").String(),
+				Author:   obj.MustGet("author").String(),
+				PageDate: obj.MustGet("date").String(),
 
 				Url:         obj.MustGet("url").String(),
 				Hostname:    obj.MustGet("hostname").String(),

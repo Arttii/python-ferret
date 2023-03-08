@@ -129,7 +129,7 @@ type TrafilaturaMetadata struct {
 	Hostname    string `json:"hostname,omitempty" parquet:"hostname,dict,gzip"`
 	Description string `json:"description,omitempty" parquet:"description,dict,gzip"`
 	Sitename    string `json:"sitename,omitempty" parquet:"sitename,dict,gzip"`
-	Date        string `json:"date,omitempty" parquet:"date,dict,gzip"`
+	PageDate    string `json:"page_date,omitempty" parquet:"page_date,dict,gzip"`
 }
 type TrafilaturaItem struct {
 	ContentHTML string `json:"content_html,omitempty" parquet:"content_html,dict,gzip"`
@@ -146,5 +146,5 @@ type TrafilaturaItem struct {
 	Hostname    string `json:"hostname,omitempty" parquet:"hostname,dict,gzip"`
 	Description string `json:"description,omitempty" parquet:"description,dict,gzip"`
 	Sitename    string `json:"sitename,omitempty" parquet:"sitename,dict,gzip"`
-	Date        string `json:"date,omitempty" parquet:"date,dict,gzip"`
+	PageDate    string `json:"page_date,omitempty" parquet:"page_date,dict,gzip"`
 }
