@@ -18,6 +18,7 @@ import "C"
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/MontFerret/ferret"
@@ -203,5 +204,5 @@ func Execute(queryC *C.char, optsC C.struct_COptions) C.struct_CResult {
 func main() {
 
 	example, _ := ioutil.ReadFile("/home/arti/workdir/python-ferret/example/example.fql")
-	Execute(C.CString(string(example)), C.struct_COptions{})
+	fmt.Println(Execute(C.CString(string(example)), C.struct_COptions{}))
 }

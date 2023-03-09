@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/MontFerret/ferret/pkg/runtime/core"
@@ -70,11 +71,15 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 	reader, writer := io.Pipe()
 	defer reader.Close()
 	ctxTimeout, cancel := context.WithTimeout(ctx, 5*time.Minute)
-
+	urls := make(chan core.Value, items.Length())
 	defer cancel()
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	go func() {
 		defer writer.Close()
-
+		defer wg.Done()
 		pWriter := parquet.NewWriter(writer, parquet.DataPageVersion(1), parquet.PageBufferSize(20))
 
 		items.ForEach(func(value core.Value, idx int) bool {
@@ -96,11 +101,14 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 				Description: obj.MustGet("description").String(),
 				Sitename:    obj.MustGet("sitename").String(),
 			}
-
-			if err := pWriter.Write(row); err != nil {
-				writer.CloseWithError(err)
-				return false
+			if row.ContentText != "" {
+				if err := pWriter.Write(row); err != nil {
+					writer.CloseWithError(err)
+					return false
+				}
+				urls <- obj.MustGet("url")
 			}
+
 			return true
 		})
 
@@ -141,5 +149,14 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 		}
 	}
 
-	return values.NewInt(int(items.Length())), nil
+	go func() {
+		wg.Wait()
+		close(urls)
+	}()
+	results := values.EmptyArray()
+	for s := range urls {
+		results.Push(s)
+	}
+
+	return results, nil
 }

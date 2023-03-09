@@ -7,7 +7,7 @@ dev = [
 
 [project]
 name = "python_ferret"
-version = "0.2.2"
+version = "0.2.3"
 description = "Python wrapper over Ferret written in C with some additional functions"
 authors = [
     {name = "Artyom Topchyan",email = "a.topchyan@krz.am"},

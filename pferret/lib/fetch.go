@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"sync/atomic"
 	"time"
 
 	"github.com/MontFerret/ferret/pkg/drivers"
@@ -12,7 +11,6 @@ import (
 	"github.com/MontFerret/ferret/pkg/stdlib/html"
 
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/sync/semaphore"
 )
 
 // ELEMENTS parallel fetches docs from a list of urls
@@ -31,7 +29,7 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 	}
 	concunrrency := 5
 
-	wait := time.Duration(0)
+	wait := time.Duration(time.Millisecond * 500)
 
 	if len(args) > 2 {
 		concunrrency = int(args[2].(values.Int))
@@ -45,7 +43,7 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 
 	}
 
-	semaphore := semaphore.NewWeighted(int64(concunrrency))
+	//semaphore := semaphore.NewWeighted(int64(concunrrency))
 
 	err = core.ValidateType(args[0], types.Array)
 
@@ -58,29 +56,16 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 	// g, _ := errgroup.WithContext(context.Background())
 
 	g := new(errgroup.Group)
+	g.SetLimit(concunrrency)
 
-	docs := make(chan core.Value)
+	docs := make(chan core.Value, urls.Length())
 	results := values.EmptyArray()
 
 	//logger := logging.FromContext(ctx)
-	processedUrls := int32(urls.Length())
 
 	urls.ForEach(func(url core.Value, idx int) bool {
 
 		g.Go(func() error {
-
-			defer func() {
-				// Last one out closes shop
-				if atomic.AddInt32(&processedUrls, -1) == 0 {
-					close(docs)
-				}
-			}()
-
-			// Acquire semaphore to limit concurrent download
-			err := semaphore.Acquire(ctx, 1)
-			if err != nil {
-				return err
-			}
 
 			docValue := core.Value(nil)
 
@@ -91,7 +76,6 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 				docValue, err = html.Open(ctx, url, args[1])
 			}
 
-			semaphore.Release(1)
 			if err != nil {
 
 				return nil
@@ -110,8 +94,6 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 				return nil
 			}
 
-			_ = doc
-
 			// Add delay (to prevent too many request to target server)
 			time.Sleep(wait)
 
@@ -122,17 +104,13 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 		return true
 	})
 
-	g.Go(func() error {
-		for d := range docs {
-			results.Push(d)
-		}
-		return nil
-	})
+	go func() {
+		g.Wait()
+		close(docs)
+	}()
 
-	err = g.Wait()
-
-	if err != nil {
-		return values.None, err
+	for d := range docs {
+		results.Push(d)
 	}
 
 	return results, nil
