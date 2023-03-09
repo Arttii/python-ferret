@@ -41,7 +41,7 @@ func TrafilaturaExtract(ctx context.Context, args ...core.Value) (core.Value, er
 		},
 	}
 
-	el, err := drivers.ToElement(args[0])
+	doc, err := drivers.ToDocument(args[0])
 
 	if err != nil {
 		return values.None, err
@@ -83,7 +83,7 @@ func TrafilaturaExtract(ctx context.Context, args ...core.Value) (core.Value, er
 
 	}
 
-	reader := strings.NewReader(el.String())
+	reader := strings.NewReader(doc.String())
 
 	r, err := trafilatura.Extract(reader, opts)
 	if err != nil {
@@ -101,7 +101,7 @@ func TrafilaturaExtract(ctx context.Context, args ...core.Value) (core.Value, er
 
 	obj.Set("title", values.NewString(r.Metadata.Title))
 	obj.Set("author", values.NewString(r.Metadata.Author))
-	obj.Set("url", values.NewString(r.Metadata.URL))
+	obj.Set("url", doc.GetURL())
 	obj.Set("hostname", values.NewString(r.Metadata.Hostname))
 	obj.Set("description", values.NewString(r.Metadata.Description))
 	obj.Set("sitename", values.NewString(r.Metadata.Sitename))
