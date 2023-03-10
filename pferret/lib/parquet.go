@@ -77,12 +77,23 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 	var wg sync.WaitGroup
 	wg.Add(1)
 
+	nonEmpty := values.EmptyArray()
+
+	items.ForEach(func(value core.Value, idx int) bool {
+		obj := value.(*values.Object)
+		if obj.MustGet("contentText").String() != "" {
+			nonEmpty.Push(value)
+		}
+		return true
+
+	})
+
 	go func() {
 		defer writer.Close()
 		defer wg.Done()
 		pWriter := parquet.NewWriter(writer, parquet.DataPageVersion(1), parquet.PageBufferSize(20))
 
-		items.ForEach(func(value core.Value, idx int) bool {
+		nonEmpty.ForEach(func(value core.Value, idx int) bool {
 
 			obj := value.(*values.Object)
 
@@ -101,14 +112,11 @@ func (w *ParquetWriter) WriteParquetTrafilatura(ctx context.Context, args ...cor
 				Description: obj.MustGet("description").String(),
 				Sitename:    obj.MustGet("sitename").String(),
 			}
-			if row.ContentText != "" {
-				if err := pWriter.Write(row); err != nil {
-					writer.CloseWithError(err)
-					return false
-				}
-				urls <- obj.MustGet("url")
+			if err := pWriter.Write(row); err != nil {
+				writer.CloseWithError(err)
+				return false
 			}
-
+			urls <- obj.MustGet("url")
 			return true
 		})
 

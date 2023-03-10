@@ -68,7 +68,6 @@ func FetchTrafilatura(ctx context.Context, args ...core.Value) (core.Value, erro
 		g.Go(func() error {
 
 			docValue := core.Value(nil)
-
 			// Process URL
 			if len(args) > 1 {
 				docValue, err = html.Open(ctx, url)
