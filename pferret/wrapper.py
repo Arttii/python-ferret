@@ -1,7 +1,7 @@
 import ctypes
 import ctypes.util
 import json
-
+import os
 
 class _Options(ctypes.Structure):
     _fields_ = [
@@ -52,7 +52,9 @@ class Ferret:
         self.params: dict = kwargs.get('params', {})
 
         path = '/'.join(__file__.split('/')[:-1])
-        self.__ferret = ctypes.CDLL(f'{path}/lib/libferret.so')
+      
+            
+        self.__ferret = ctypes.CDLL(f"{path}/lib/{'libferret.so' if os.name == 'nt' else 'libferret.dll'}")
         self.__ferret.Execute.restype = _Result
 
     def execute(self, query: str, **kwargs) -> str:
